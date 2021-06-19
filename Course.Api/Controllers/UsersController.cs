@@ -8,14 +8,22 @@ using Course.Api.Models.Users;
 
 namespace Course.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         [HttpPost]
-        public IActionResult LogIn(LoginViewModelInput loginViewModelInput)
+        [Route("login")]
+        public IActionResult Login(LoginViewModelInput loginViewModelInput)
         {
-            return Created("", loginViewModelInput);
+            return Ok(loginViewModelInput);
+        }
+
+        [HttpPost]
+        [Route("register")]
+        public IActionResult RegisterLogin(RegisterViewModelInput registerViewModelInput)
+        {
+            return Created("", registerViewModelInput);
         }
     }
 }
