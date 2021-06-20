@@ -8,6 +8,10 @@ using Course.Api.Models.Users;
 using Course.Api.Models;
 using Swashbuckle.AspNetCore.Annotations;
 using Course.Api.Filters;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Course.Api.Controllers
 {
@@ -27,7 +31,35 @@ namespace Course.Api.Controllers
         [CustomModelStateValidation]
         public IActionResult Login(LoginViewModelInput loginViewModelInput)
         {
-            return Ok(loginViewModelInput);
+            var user = new UserViewModelOutput
+            {
+                Code = 1,
+                Login = "mbcordeiro",
+                Email = "mbcordeiro@email.com"
+            };
+
+            var secret = Encoding.ASCII.GetBytes("CVbniusdfhbasdlk&*6@gslkdjfasjd-sdflsiuçdof213553||");
+            var symmetricSecurityKey = new SymmetricSecurityKey(secret);
+            var securityTokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Code.ToString()),
+                    new Claim(ClaimTypes.Name, user.Login),
+                    new Claim(ClaimTypes.Email, user.Email)
+                }),
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            var tokenGenerate = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
+            var token = jwtSecurityTokenHandler.WriteToken(tokenGenerate);
+
+            return Ok(new { 
+                Token = token,
+                User = user
+            });
         }
 
         [HttpPost]

@@ -10,6 +10,7 @@ namespace Course.Api.Models.Users
     {
         [Required(ErrorMessage = "Login is required")]
         public string logim { get; set; }
+
         [Required(ErrorMessage = "E-mail is required")]
         public string password { get; set; }
     }

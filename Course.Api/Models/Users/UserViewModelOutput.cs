@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 
 namespace Course.Api.Models.Users
 {
-    public class RegisterViewModelInput
+    public class UserViewModelOutput
     {
-        [Required(ErrorMessage = "Login is required")]
+        public int Code { get; set; }
+
+        [Required(ErrorMessage = "Field '{0}' is required")]
         public string Login { get; set; }
 
-        [Required(ErrorMessage = "E-mail is required")]
+        [Required(ErrorMessage = "Field '{0}' is required")]
         public string Email { get; set; }
-
-        [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; }
     }
 }
