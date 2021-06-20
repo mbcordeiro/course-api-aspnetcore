@@ -4,5 +4,24 @@
         <name>Course.Api</name>
     </assembly>
     <members>
+        <member name="M:Course.Api.Controllers.CoursesController.CreateCourse(Course.Api.Models.Courses.CourseViewModelInput)">
+            <summary>
+            This service allows created courses for an authenticated user
+            </summary>
+            <param name="cursoViewModelInput"></param>
+            <returns>Return 201 status and user course data</returns>
+        </member>
+        <member name="M:Course.Api.Controllers.CoursesController.GetCourses">
+            <summary>
+            This service allows you to obtain courses 
+            </summary>       
+            <returns>Return 201 User Course Status and Data</returns>
+        </member>
+        <member name="M:Course.Api.Controllers.UsersController.Login(Course.Api.Models.Users.LoginViewModelInput)">
+            <summary>
+            Rota que permite autenticar um usuário cadastrado
+            </summary>      
+            <returns>Returns user and token on success</returns>
+        </member>
     </members>
 </doc>
