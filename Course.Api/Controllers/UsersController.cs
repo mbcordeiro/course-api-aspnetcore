@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Course.Api.Models.Users;
 using Course.Api.Models;
 using Swashbuckle.AspNetCore.Annotations;
+using Course.Api.Filters;
 
 namespace Course.Api.Controllers
 {
@@ -23,6 +24,7 @@ namespace Course.Api.Controllers
         [SwaggerResponse(statusCode: 500, description: "Internal server error", Type = typeof(GenericErrorViewModel))]
         [HttpPost]
         [Route("login")]
+        [CustomModelStateValidation]
         public IActionResult Login(LoginViewModelInput loginViewModelInput)
         {
             return Ok(loginViewModelInput);
@@ -30,6 +32,7 @@ namespace Course.Api.Controllers
 
         [HttpPost]
         [Route("register")]
+        [CustomModelStateValidation]
         public IActionResult RegisterLogin(RegisterViewModelInput registerViewModelInput)
         {
             return Created("", registerViewModelInput);
