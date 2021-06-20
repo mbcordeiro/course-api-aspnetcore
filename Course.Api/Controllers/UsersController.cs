@@ -15,7 +15,7 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace Course.Api.Controllers
 {
-    [Route("api/v1/users")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
