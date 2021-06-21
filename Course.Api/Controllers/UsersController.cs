@@ -18,12 +18,15 @@ using Course.Api.Business.Entities;
 
 namespace Course.Api.Controllers
 {
+    /// <summary>
+    /// Users controller
+    /// </summary>
     [Route("api/v1/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         /// <summary>
-        /// Rota que permite autenticar um usuário cadastrado
+        /// Route that allows to authenticate a registered user
         /// </summary>      
         /// <returns>Returns user and token on success</returns>
         [SwaggerResponse(statusCode: 200, description: "Authenticate success", Type = typeof(LoginViewModelInput))]
@@ -65,14 +68,26 @@ namespace Course.Api.Controllers
             });
         }
 
+        /// <summary>
+        /// Route that allows to register a user
+        /// </summary>
+        /// <param name="register"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("register")]     
         [CustomModelStateValidation]
-        public IActionResult RegisterLogin(RegisterViewModelInput registerViewModelInput)
+        public IActionResult RegisterLoginAsync(RegisterViewModelInput registerViewModelInput)
         {
             var options = new DbContextOptionsBuilder<CourseDbContext>();
             options.UseSqlServer("server = localhost, database = courses; user=sa; password=sa;");
             var context = new CourseDbContext(options.Options);
+
+            var pendenciesMigrations = context.Database.GetPendingMigrations();
+
+            if(pendenciesMigrations.Count() > 0)
+            {
+                context.Database.Migrate();
+            }
 
             var user = new User();
             user.Login = registerViewModelInput.Login;

@@ -16,8 +16,8 @@ namespace Course.Api.Infra.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new CourseMapping);
-            modelBuilder.ApplyConfiguration(new UserMapping);
+            modelBuilder.ApplyConfiguration(new CourseMapping());
+            modelBuilder.ApplyConfiguration(new UserMapping());
             base.OnModelCreating(modelBuilder);
         }
 
