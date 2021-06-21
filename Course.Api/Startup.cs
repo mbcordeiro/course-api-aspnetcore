@@ -1,6 +1,7 @@
 using Course.Api.Business.Repositories;
 using Course.Api.Infra.Data;
 using Course.Api.Infra.Data.Repositories;
+using Course.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -96,6 +97,8 @@ namespace Course.Api
                opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICourseRepository, CourseRepository>();
+            services.AddScoped<IAuthenticationService, JwtService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

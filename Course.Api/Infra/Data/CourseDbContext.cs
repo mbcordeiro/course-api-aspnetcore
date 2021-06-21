@@ -22,6 +22,6 @@ namespace Course.Api.Infra.Data
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<CourseEntity> courses { get; set; }
+        public DbSet<CourseEntity> Courses { get; set; }
     }
 }

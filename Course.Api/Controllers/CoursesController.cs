@@ -8,6 +8,8 @@ using Course.Api.Models.Courses;
 using System.Security.Claims;
 using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Authorization;
+using Course.Api.Business.Repositories;
+using Course.Api.Business.Entities;
 
 namespace Course.Api.Controllers
 {
@@ -16,6 +18,13 @@ namespace Course.Api.Controllers
     [Authorize]
     public class CoursesController : ControllerBase
     {
+        private readonly ICourseRepository _courseRepository;
+
+        CoursesController(ICourseRepository courseRepository)
+        {
+            _courseRepository = courseRepository;
+        }
+
         /// <summary>
         /// This service allows created courses for an authenticated user
         /// </summary>
@@ -27,7 +36,14 @@ namespace Course.Api.Controllers
         [Route("")]
         public async Task<IActionResult> CreateCourse(CourseViewModelInput courseViewModelInput)
         {
-            var codigoUsuario = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+            var userCode = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+            var course = new CourseEntity {
+                Name = courseViewModelInput.Name,
+                Description = courseViewModelInput.Description,
+                UserCode = userCode
+            };
+            _courseRepository.Add(course);
+            _courseRepository.Save();
             return Created("", courseViewModelInput);
         }
 
@@ -41,13 +57,15 @@ namespace Course.Api.Controllers
         [Route("")]
         public async Task<IActionResult> GetCourses()
         {
+            var userCode = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
             var courses = new List<CourseViewModelOutput>();
-            courses.Add(new CourseViewModelOutput()
-            {
-                Login = "Teste",
-                Description = "Teste",
-                Name = "Teste"
-            }); 
+            _courseRepository.GetByUser(userCode)
+                .Select(s => new CourseViewModelOutput
+                {
+                    Login = s.User.Login,
+                    Name = s.Name,
+                    Description = s.Description
+                }); 
             return Ok(courses);
         }
     }
