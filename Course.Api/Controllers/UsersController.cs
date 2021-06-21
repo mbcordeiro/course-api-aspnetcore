@@ -15,6 +15,8 @@ using System.IdentityModel.Tokens.Jwt;
 using Course.Api.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Course.Api.Business.Entities;
+using Course.Api.Business.Repositories;
+using Course.Api.Services;
 
 namespace Course.Api.Controllers
 {
@@ -25,6 +27,15 @@ namespace Course.Api.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private readonly IUserRepository _userRepository;
+        private readonly IAuthenticationService _authenticationService;
+
+        UsersController(IUserRepository userRepository, IAuthenticationService authenticationService)
+        {
+            _userRepository = userRepository;
+            _authenticationService = authenticationService;
+        }
+
         /// <summary>
         /// Route that allows to authenticate a registered user
         /// </summary>      
@@ -37,34 +48,25 @@ namespace Course.Api.Controllers
         [CustomModelStateValidation]
         public IActionResult Login(LoginViewModelInput loginViewModelInput)
         {
-            var user = new UserViewModelOutput
+            var user = _userRepository.GetUser(loginViewModelInput.login);
+
+            if(user == null)
             {
-                Code = 1,
-                Login = "mbcordeiro",
-                Email = "mbcordeiro@email.com"
+                return BadRequest("There was an error trying to find the user");
+            }
+
+            var userViewModelOutput = new UserViewModelOutput
+            {
+                Code = user.Code,
+                Login = user.Login,
+                Email = user.Email
             };
 
-            var secret = Encoding.ASCII.GetBytes("CVbniusdfhbasdlk&*6@gslkdjfasjd-sdflsiuçdof213553||");
-            var symmetricSecurityKey = new SymmetricSecurityKey(secret);
-            var securityTokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Code.ToString()),
-                    new Claim(ClaimTypes.Name, user.Login),
-                    new Claim(ClaimTypes.Email, user.Email)
-                }),
-                Expires = DateTime.UtcNow.AddDays(1),
-                SigningCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var tokenGenerate = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
-            var token = jwtSecurityTokenHandler.WriteToken(tokenGenerate);
+            var token = _authenticationService.GenerateToken(userViewModelOutput);
 
             return Ok(new { 
                 Token = token,
-                User = user
+                User = userViewModelOutput
             });
         }
 
@@ -73,29 +75,19 @@ namespace Course.Api.Controllers
         /// </summary>
         /// <param name="register"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost]  
         [Route("register")]     
         [CustomModelStateValidation]
         public IActionResult RegisterLoginAsync(RegisterViewModelInput registerViewModelInput)
         {
-            var options = new DbContextOptionsBuilder<CourseDbContext>();
-            options.UseSqlServer("server = localhost, database = courses; user=sa; password=sa;");
-            var context = new CourseDbContext(options.Options);
-
-            var pendenciesMigrations = context.Database.GetPendingMigrations();
-
-            if(pendenciesMigrations.Count() > 0)
-            {
-                context.Database.Migrate();
-            }
-
-            var user = new User();
-            user.Login = registerViewModelInput.Login;
-            user.Email = registerViewModelInput.Email;
-            user.Password = registerViewModelInput.Password;
-
-            context.Users.Add(user);
-            context.SaveChanges();
+            var user = new User{ 
+                Login = registerViewModelInput.Login,
+                Password = registerViewModelInput.Email,
+                Email = registerViewModelInput.Password
+            };
+            
+            _userRepository.Add(user);
+            _userRepository.Save();
             return Created("", registerViewModelInput);
         }
     }

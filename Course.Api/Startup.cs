@@ -1,8 +1,12 @@
+using Course.Api.Business.Repositories;
+using Course.Api.Infra.Data;
+using Course.Api.Infra.Data.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -87,6 +91,11 @@ namespace Course.Api
                         ValidateAudience = false
                     };
                 });
+
+            services.AddDbContext<CourseDbContext>(opt =>
+               opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));
+
+            services.AddScoped<IUserRepository, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
