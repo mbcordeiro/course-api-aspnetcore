@@ -12,6 +12,9 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using Course.Api.Infra.Data;
+using Microsoft.EntityFrameworkCore;
+using Course.Api.Business.Entities;
 
 namespace Course.Api.Controllers
 {
@@ -63,10 +66,21 @@ namespace Course.Api.Controllers
         }
 
         [HttpPost]
-        [Route("register")]
+        [Route("register")]     
         [CustomModelStateValidation]
         public IActionResult RegisterLogin(RegisterViewModelInput registerViewModelInput)
         {
+            var options = new DbContextOptionsBuilder<CourseDbContext>();
+            options.UseSqlServer("server = localhost, database = courses; user=sa; password=sa;");
+            var context = new CourseDbContext(options.Options);
+
+            var user = new User();
+            user.Login = registerViewModelInput.Login;
+            user.Email = registerViewModelInput.Email;
+            user.Password = registerViewModelInput.Password;
+
+            context.Users.Add(user);
+            context.SaveChanges();
             return Created("", registerViewModelInput);
         }
     }
