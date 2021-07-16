@@ -48,7 +48,7 @@ namespace Course.Api.Controllers
         [CustomModelStateValidation]
         public IActionResult Login(LoginViewModelInput loginViewModelInput)
         {
-            var user = _userRepository.GetUser(loginViewModelInput.login);
+            var user = _userRepository.GetUser(loginViewModelInput.Login);
 
             if(user == null)
             {

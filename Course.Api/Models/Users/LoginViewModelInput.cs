@@ -9,9 +9,9 @@ namespace Course.Api.Models.Users
     public class LoginViewModelInput
     {
         [Required(ErrorMessage = "Login is required")]
-        public string login { get; set; }
+        public string Login { get; set; }
 
         [Required(ErrorMessage = "E-mail is required")]
-        public string password { get; set; }
+        public string Password { get; set; }
     }
 }
