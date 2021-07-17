@@ -46,9 +46,9 @@ namespace Course.Api.Controllers
         [HttpPost]
         [Route("login")]
         [CustomModelStateValidation]
-        public IActionResult Login(LoginViewModelInput loginViewModelInput)
+        public async Task<IActionResult> Login(LoginViewModelInput loginViewModelInput)
         {
-            var user = _userRepository.GetUser(loginViewModelInput.Login);
+            var user = await _userRepository.GetUser(loginViewModelInput.Login);
 
             if(user == null)
             {

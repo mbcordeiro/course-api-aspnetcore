@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Course.Api.Infra.Data.Repositories
 {
@@ -26,9 +27,9 @@ namespace Course.Api.Infra.Data.Repositories
             _context.SaveChanges();
         }
 
-        public User GetUser(string login)
+        public async Task<User> GetUser(string login)
         {
-            return _context.Users.FirstOrDefault(u => u.Login == login);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Login == login);
         }
     }
 }

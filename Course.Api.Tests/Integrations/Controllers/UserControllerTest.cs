@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Course.Api.Tests.Integrations.Controllers
 {
-    public class UserControllerTest
+    public class UserControllerTest : IClassFixture<WebApplicationFactory<Startup>>
     {
         private readonly WebApplicationFactory<Startup> _webApplicationFactory;
         private readonly HttpClient _httpClient;
@@ -22,16 +22,43 @@ namespace Course.Api.Tests.Integrations.Controllers
         }
 
         [Fact]
-        public void Login()
+        public async Task Login()
         {
+            //Arrange
             var loginViewModelInput = new LoginViewModelInput {
                 Login = "mbcordeiro", 
                 Password = "123456"
-            };
+            }; 
             
-            StringContent content = new StringContent(JsonConvert.SerializeObject(loginViewModelInput));
-            var httpClienteRequest = _httpClient.PostAsync("api/v1/usuario/login", content).GetAwaiter().GetResult();
+            StringContent content = new StringContent(JsonConvert.SerializeObject(loginViewModelInput), Encoding.UTF8, "application/json");
+
+            //Act
+            var httpClienteRequest = await _httpClient.PostAsync("api/v1/usuario/login", content);
+            
+            //Assert
             Assert.Equal(System.Net.HttpStatusCode.OK, httpClienteRequest.StatusCode);
         }
+
+        [Fact]
+        public void Register()  
+        {
+            //Arrange
+            var registerViewModelInput = new RegisterViewModelInput
+            {
+                Email = "matheusdebarroscordeiro@gmail.com",
+                Login = "mbcordeiro",
+                Password = "123456"
+            };
+
+            StringContent content = new StringContent(JsonConvert.SerializeObject(registerViewModelInput), Encoding.UTF8, "application/json");
+
+            //Act
+            var httpClienteRequest = _httpClient.PostAsync("api/v1/usuario/register", content).GetAwaiter().GetResult();
+           
+            //Assert
+            Assert.Equal(System.Net.HttpStatusCode.Created, httpClienteRequest.StatusCode);
+        }
+
+        
     }
 }

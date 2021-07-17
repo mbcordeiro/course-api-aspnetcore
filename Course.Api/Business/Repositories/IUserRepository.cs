@@ -10,6 +10,6 @@ namespace Course.Api.Business.Repositories
     {
         void Add(User user);
         void Save();
-        User GetUser(string Login);
+        Task<User> GetUser(string Login);
     }
 }
